@@ -12,7 +12,7 @@ import { MOCK_BOT_TOKEN, MOCK_CHAT_ID } from "../dist/stellar/mock-constants.js"
 
 const run = promisify(execFile);
 const dist = (name) => fileURLToPath(new URL(`../dist/${name}`, import.meta.url));
-const DIST_CONFIG = dist("config.js");
+const DIST_CONFIG = new URL("../dist/config.js", import.meta.url).href;
 const DIST_INDEX = dist("index.js");
 
 const CANARY_TOKEN = "123456789:CANARY-TOKEN-MUST-NEVER-LEAK";
