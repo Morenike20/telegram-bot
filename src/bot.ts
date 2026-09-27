@@ -12,7 +12,7 @@ import type { UserFromGetMe } from "grammy/types";
 
 import { escapeMd, previewMessage, safeErrorMessage, type ExplorerKeyboard } from "./notifications/format.js";
 export { previewMessage } from "./notifications/format.js";
-import { networkLabel, type BotConfig } from "./config.js";
+import { formatProvenanceSummary, networkLabel, type BotConfig } from "./config.js";
 import { contractExplorerUrl } from "./stellar/client.js";
 import type { ContractSource } from "./stellar/decode.js";
 import { buildHealthReport, chainClockLabel } from "./health.js";
@@ -195,6 +195,16 @@ export function healthMessage(
       "",
       `Last error \\(${ago(status.lastError?.at ?? null, nowMs)}\\): ${escapeMd(report.poller.lastError.message)}`,
     );
+  }
+
+  // Origins, never values: an operator can confirm this process is reading the
+  // intended .env / profile without a secret being typed into a chat. The
+  // summary is interpolated into a code span unescaped on purpose — it is built
+  // only from key names, source names, and counts (see config.ts), so it has no
+  // MarkdownV2 reserved character to escape and stays copy-pasteable.
+  lines.push("", `Config: \`${formatProvenanceSummary(report.config)}\``);
+  if (report.config.warnings.length > 0) {
+    lines.push(`Config notes: ${escapeMd(report.config.warnings.join("; "))}`);
   }
 
   return lines.join("\n");
